@@ -11,7 +11,7 @@
 
 	<target name="check-download">
     	<available file="${dist}/download/${mongo-version}.${mongo-installer-ext}" 
-    		property="download.present"/>
+		property="download.present" />
 	</target>
 	 
 	<target name="download" depends="check-download" unless="download.present">
@@ -21,11 +21,14 @@
 		</get>
 	</target>
 
+
 	<target name="extract" depends="download">
 		<mkdir dir="${dist}/binaries" />
 		<mkdir dir="${dist}/extract" />
+
 		<untar src="${dist}/download/${mongo-version}.tgz" dest="${dist}/extract/"
 			compression="gzip" />
+
 		<copy todir="${dist}/binaries">
 			<fileset dir="${dist}/extract/${mongo-version}/bin">
 			</fileset>

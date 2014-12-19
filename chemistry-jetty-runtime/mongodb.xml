@@ -4,11 +4,15 @@
 	</description>
 	<!-- set global properties for this build -->
 	<property name="dist" location="mongo" />
-	<!-- property name="mongo-version" value="mongodb-osx-x86_64-2.6.6"/ --> 
-	<property name="mongo-version" value="mongodb-win32-x86_64-2008plus-2.6.6"/>
-	<property name="mongo-base-download-url" value ="http://downloads.mongodb.org/win32/"/>
-	<property name="mongo-installer-ext" value="zip"/>
-
+	
+	<!-- property name="mongo-base-download-url" value ="http://downloads.mongodb.org/win32/"/ -->
+	<!-- property name="mongo-version" value="mongodb-win32-x86_64-2008plus-2.6.6"/ -->
+	<!-- property name="mongo-installer-ext" value="zip"/ -->
+	
+	<property name="mongo-base-download-url" value ="http://downloads.mongodb.org/osx/"/>
+	<property name="mongo-version" value="mongodb-osx-x86_64-2.6.6"/> 
+	<property name="mongo-installer-ext" value="tgz"/>
+	
 	<target name="check-download">
     	<available file="${dist}/download/${mongo-version}.${mongo-installer-ext}" 
 		property="download.present" />
@@ -26,7 +30,7 @@
 		<mkdir dir="${dist}/binaries" />
 		<mkdir dir="${dist}/extract" />
 
-		<untar src="${dist}/download/${mongo-version}.tgz" dest="${dist}/extract/"
+		<untar src="${dist}/download/${mongo-version}.${mongo-installer-ext}" dest="${dist}/extract/"
 			compression="gzip" />
 
 		<copy todir="${dist}/binaries">
@@ -37,27 +41,18 @@
 		<delete dir="${dist}/extract" />
 	</target>
 
-	<target name="createdb">
+	<target name="createdb" depends="extract">
+		<delete dir="${dist}/data" />
 		<mkdir dir="${dist}/data" />
-		
   		<exec executable="${dist}/binaries/mongod" spawn="true">
   			<arg line="--dbpath ${dist}/data"/>
   		</exec>
-	</target>
-	
-	<target name="generate-test-data">
-		<mkdir dir="${dist}/data" />
-		
   		<exec executable="${dist}/binaries/mongo" spawn="false">
   			<arg line="${dist}/scripts/generate-test-data.js"/>
   		</exec>
 	</target>
-
-	<target name="clean-data" description="clean up">
-		<delete dir="${dist}/data" />
-	</target>
 	
-	<target name="clean-all" description="clean up everything">
+	<target name="clean" description="clean up everything">
 		<delete dir="${dist}/data" />
 		<delete dir="${dist}/binaries" />
 		<delete dir="${dist}/extract" />
